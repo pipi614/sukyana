@@ -54,12 +54,13 @@ if "show_answer" not in st.session_state:
     st.session_state.show_answer = False
 
 # ==========================================
-# 2. 画像処理 & OCR関数（OpenCV + EasyOCR）
+# 2. 画像処理 & OCR関数（修正版）
 # ==========================================
-def process_image_and_extract_text(image_bytes):
+def process_image_and_extract_text(uploaded_file):
     """画像から緑色マーカー領域を抜き出してOCR実行"""
-    # バイトデータからOpenCV画像オブジェクトへ変換
-    file_bytes = np.asarray(bytearray(image_bytes.read()), dtype=uint8)
+    # アップロードされたファイルをバイナリからOpenCV画像オブジェクトへ変換（修正箇所）
+    bytes_data = uploaded_file.getvalue()
+    file_bytes = np.frombuffer(bytes_data, np.uint8)
     image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
     
     if image is None:
@@ -91,7 +92,7 @@ def process_image_and_extract_text(image_bytes):
             extracted_cards.append({
                 "id": len(st.session_state.card_data) + idx + 1,
                 "front": text,
-                "back": "",  # 意味は手書きまたは手入力
+                "back": "",  # 意味は手描きまたは手入力
                 "correct": 0,
                 "total": 0
             })
